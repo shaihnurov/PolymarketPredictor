@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PolymarketPredictor.Application\PolymarketPredictor.Application.csproj" />
     <ProjectReference Include="..\PolymarketPredictor.Infrastructure\PolymarketPredictor.Infrastructure.csproj" />
+    <ProjectReference Include="..\PolymarketPredictor.Persistence\PolymarketPredictor.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

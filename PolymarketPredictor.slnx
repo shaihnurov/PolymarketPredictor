@@ -3,6 +3,7 @@
     <Project Path="src/PolymarketPredictor.Application/PolymarketPredictor.Application.csproj" />
     <Project Path="src/PolymarketPredictor.Domain/PolymarketPredictor.Domain.csproj" />
     <Project Path="src/PolymarketPredictor.Infrastructure/PolymarketPredictor.Infrastructure.csproj" />
+    <Project Path="src/PolymarketPredictor.Persistence/PolymarketPredictor.Persistence.csproj" />
     <Project Path="src/PolymarketPredictor.WebApi/PolymarketPredictor.WebApi.csproj" />
   </Folder>
   <Folder Name="/tests/">

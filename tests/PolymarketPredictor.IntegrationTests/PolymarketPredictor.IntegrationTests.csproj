@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\PolymarketPredictor.WebApi\PolymarketPredictor.WebApi.csproj" />
+    <ProjectReference Include="..\..\src\PolymarketPredictor.Persistence\PolymarketPredictor.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

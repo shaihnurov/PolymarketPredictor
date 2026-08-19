@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PolymarketPredictor.Application.Common.Interfaces;
 
-namespace PolymarketPredictor.Persistence;
+namespace PolymarketPredictor.Persistence.Extensions;
 
 /// <summary>
 /// Регистрация зависимостей слоя Persistence в DI-контейнере
 /// </summary>
-public static class DependencyInjection
+public static class PersistenceServiceExtensions
 {
     /// <summary>
     /// Регистрирует сервисы
@@ -21,10 +20,8 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("Postgres")
             ?? throw new InvalidOperationException("Connection string 'Postgres' не найдена в конфигурации");
 
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString, npgsql 
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString, npgsql
             => npgsql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
-
-        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
         return services;
     }

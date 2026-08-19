@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PolymarketPredictor.Application\PolymarketPredictor.Application.csproj" />
+    <ProjectReference Include="..\PolymarketPredictor.Domain\PolymarketPredictor.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

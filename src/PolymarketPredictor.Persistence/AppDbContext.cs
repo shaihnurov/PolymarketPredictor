@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PolymarketPredictor.Application.Common.Interfaces;
 using PolymarketPredictor.Domain.Entities;
 
 namespace PolymarketPredictor.Persistence;
@@ -7,7 +6,7 @@ namespace PolymarketPredictor.Persistence;
 /// <summary>
 /// DbContext
 /// </summary>
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IApplicationDbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     /// <inheritdoc/>
     public DbSet<TrackedMarket> TrackedMarkets => Set<TrackedMarket>();

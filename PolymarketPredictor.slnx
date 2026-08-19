@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PolymarketPredictor.Application/PolymarketPredictor.Application.csproj" />
+    <Project Path="src/PolymarketPredictor.Domain/PolymarketPredictor.Domain.csproj" />
+    <Project Path="src/PolymarketPredictor.Infrastructure/PolymarketPredictor.Infrastructure.csproj" />
+    <Project Path="src/PolymarketPredictor.WebApi/PolymarketPredictor.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PolymarketPredictor.IntegrationTests/PolymarketPredictor.IntegrationTests.csproj" />
+    <Project Path="tests/PolymarketPredictor.UnitTests/PolymarketPredictor.UnitTests.csproj" />
+  </Folder>
+</Solution>

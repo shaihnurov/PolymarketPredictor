@@ -1,0 +1,34 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using PolymarketPredictor.Application.Common.Interfaces;
+using PolymarketPredictor.Infrastructure.ExternalClients.CoinGecko;
+using PolymarketPredictor.Infrastructure.ExternalClients.Polymarket;
+
+namespace PolymarketPredictor.Infrastructure.Extensions;
+
+/// <summary>Р
+/// егистрация зависимостей слоя Infrastructure в DI-контейнере
+/// </summary>
+public static class InfrastructureServiceExtensions
+{
+    /// <summary>
+    /// Регистрирует сервисы
+    /// </summary>
+    /// <param name="services">Коллекция сервисов DI</param>
+    /// <returns>Та же коллекция сервисов, для цепочки вызовов</returns>
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    {
+        services.AddHttpClient<IPolymarketClient, PolymarketClient>(client =>
+        {
+            client.BaseAddress = new Uri("https://gamma-api.polymarket.com/");
+            client.Timeout = TimeSpan.FromSeconds(15);
+        }).AddStandardResilienceHandler();
+
+        services.AddHttpClient<ICoinGeckoClient, CoinGeckoClient>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.coingecko.com/api/v3/");
+            client.Timeout = TimeSpan.FromSeconds(15);
+        }).AddStandardResilienceHandler();
+
+        return services;
+    }
+}

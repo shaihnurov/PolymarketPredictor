@@ -1,10 +1,12 @@
 using PolymarketPredictor.Application.Extensions;
 using PolymarketPredictor.Persistence.Extensions;
+using PolymarketPredictor.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddInfrastructure();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

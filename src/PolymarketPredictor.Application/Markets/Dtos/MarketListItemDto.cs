@@ -1,6 +1,6 @@
 ﻿using PolymarketPredictor.Domain.Enums;
 
-namespace PolymarketPredictor.Application.CQRS.Markets.Dtos;
+namespace PolymarketPredictor.Application.Markets.Dtos;
 
 /// <summary>
 /// Проекция одного рынка для экрана списка — только то, что нужно карточке в гриде,

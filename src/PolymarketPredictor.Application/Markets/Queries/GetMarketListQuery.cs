@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using PolymarketPredictor.Application.Common.Interfaces;
-using PolymarketPredictor.Application.CQRS.Markets.Dtos;
+using PolymarketPredictor.Application.Markets.Dtos;
 
-namespace PolymarketPredictor.Application.CQRS.Markets.Queries;
+namespace PolymarketPredictor.Application.Markets.Queries;
 
 /// <summary>
 /// Запрос списка всех отслеживаемых рынков с их последним прогнозом, для экрана списка

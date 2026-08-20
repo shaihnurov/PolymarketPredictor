@@ -16,12 +16,13 @@ public interface ITrackedMarketRepository
     Task<TrackedMarket?> GetByIdAsync(Guid id, CancellationToken ct);
 
     /// <summary>
-    /// Найти рынок по conditionId Polymarket — используется при синке, чтобы не создавать дубликаты
+    /// Получить набор conditionId, которые уже отслеживаются, из переданного списка — одним запросом,
+    /// без обращения к БД по одному conditionId за раз (используется при пакетном сидировании/синке)
     /// </summary>
-    /// <param name="polymarketConditionId">conditionId рынка в Polymarket</param>
+    /// <param name="conditionIds">conditionId, которые нужно проверить на существование</param>
     /// <param name="ct">Токен отмены</param>
-    /// <returns>Рынок или null, если ещё не отслеживается</returns>
-    Task<TrackedMarket?> GetByConditionIdAsync(string polymarketConditionId, CancellationToken ct);
+    /// <returns>Подмножество переданных conditionId, которые уже есть в БД</returns>
+    Task<HashSet<string>> GetExistingConditionIdsAsync(IReadOnlyCollection<string> conditionIds, CancellationToken ct);
 
     /// <summary>
     /// Получить список всех отслеживаемых рынков без дочерних коллекций

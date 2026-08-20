@@ -14,8 +14,14 @@ public class TrackedMarketRepository(AppDbContext dbContext) : ITrackedMarketRep
         dbContext.TrackedMarkets.FirstOrDefaultAsync(m => m.Id == id, ct);
 
     /// <inheritdoc />
-    public Task<TrackedMarket?> GetByConditionIdAsync(string polymarketConditionId, CancellationToken ct) =>
-        dbContext.TrackedMarkets.AsNoTracking().FirstOrDefaultAsync(m => m.PolymarketConditionId == polymarketConditionId, ct);
+    /// <remarks>Только для проверки существования — без трекинга</remarks>
+    public async Task<HashSet<string>> GetExistingConditionIdsAsync(IReadOnlyCollection<string> conditionIds, CancellationToken ct)
+    {
+        var existing = await dbContext.TrackedMarkets.AsNoTracking().Where(m => conditionIds.Contains(m.PolymarketConditionId))
+            .Select(m => m.PolymarketConditionId).ToListAsync(ct);
+
+        return [.. existing];
+    }
 
     /// <inheritdoc />
     public Task<List<TrackedMarket>> GetAllAsync(CancellationToken ct) =>

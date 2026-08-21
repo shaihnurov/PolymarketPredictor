@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PolymarketPredictor.Application.Common.Interfaces;
 using PolymarketPredictor.Application.Markets.Commands;
 
 namespace PolymarketPredictor.Infrastructure.BackgroundJobs;
@@ -36,38 +35,22 @@ public sealed class MarketSyncBackgroundService(IServiceScopeFactory scopeFactor
     }
 
     /// <summary>
-    /// Выполняет один полный цикл синка по всем открытым рынкам
+    /// Запускает один цикл <see cref="SyncAllOpenMarketsCommand"/> в новом DI-скоупе
     /// </summary>
     /// <param name="ct">Токен отмены</param>
     private async Task RunSyncCycleAsync(CancellationToken ct)
     {
         using var scope = scopeFactory.CreateScope();
-        var marketRepository = scope.ServiceProvider.GetRequiredService<ITrackedMarketRepository>();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
-        List<Guid> openMarketIds;
         try
         {
-            openMarketIds = await marketRepository.GetOpenMarketIdsAsync(ct);
+            var result = await sender.Send(new SyncAllOpenMarketsCommand(), ct);
+            logger.LogInformation("MarketSyncBackgroundService: цикл завершён, обработано {Processed}, ошибок {Failed}.", result.MarketsProcessed, result.MarketsFailed);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "MarketSyncBackgroundService: не удалось получить список открытых рынков");
-            return;
-        }
-
-        logger.LogInformation("MarketSyncBackgroundService: начинаю цикл синка, рынков: {Count}", openMarketIds.Count);
-
-        foreach (var marketId in openMarketIds)
-        {
-            try
-            {
-                await mediator.Send(new SyncMarketCommand(marketId), ct);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "MarketSyncBackgroundService: ошибка синка рынка {MarketId}.", marketId);
-            }
+            logger.LogError(ex, "MarketSyncBackgroundService: цикл синка завершился с ошибкой.");
         }
     }
 }

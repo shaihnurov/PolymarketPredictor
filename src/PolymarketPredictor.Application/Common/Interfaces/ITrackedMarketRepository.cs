@@ -38,6 +38,12 @@ public interface ITrackedMarketRepository
     Task<List<Guid>> GetOpenMarketIdsAsync(CancellationToken ct);
 
     /// <summary>
+    /// Получить все резолвленные рынки — нужно для расчёта Brier score
+    /// </summary>
+    /// <param name="ct">Токен отмены</param>
+    Task<List<TrackedMarket>> GetResolvedMarketsAsync(CancellationToken ct);
+
+    /// <summary>
     /// Добавить новый отслеживаемый рынок
     /// </summary>
     /// <param name="market">Новая сущность рынка</param>

@@ -23,12 +23,6 @@ public interface IPredictionRepository
     Task<List<Prediction>> GetHistoryAsync(Guid trackedMarketId, CancellationToken ct);
 
     /// <summary>
-    /// Получить все прогнозы по резолвленным рынкам — нужно для расчёта Brier score
-    /// </summary>
-    /// <param name="ct">Токен отмены</param>
-    Task<List<Prediction>> GetAllForResolvedMarketsAsync(CancellationToken ct);
-
-    /// <summary>
     /// Получить последний прогноз для каждого из перечисленных рынков одним запросом
     /// используется списком рынков, чтобы не ходить в БД по одному прогнозу на рынок (N+1)
     /// </summary>

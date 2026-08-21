@@ -428,3 +428,4 @@ docker-compose.override.yml
 # User secrets (never commit!)
 secrets.json
 **/secrets.json
+/src/PolymarketPredictor.WebApi/appsettings.Development.json

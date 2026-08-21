@@ -20,10 +20,6 @@ public class PredictionRepository(AppDbContext dbContext) : IPredictionRepositor
             .OrderBy(p => p.CreatedAt).ToListAsync(ct);
 
     /// <inheritdoc />
-    public Task<List<Prediction>> GetAllForResolvedMarketsAsync(CancellationToken ct) =>
-        dbContext.Predictions.AsNoTracking().Where(p => p.TrackedMarket.ActualOutcome != null).ToListAsync(ct);
-
-    /// <inheritdoc />
     /// <remarks>
     /// Группировка "последний прогноз на рынок" делается в памяти после выборки, а не через SQL GROUP BY
     /// EF Core не умеет надёжно транслировать "OrderByDescending().First() per group" в один SQL-запрос

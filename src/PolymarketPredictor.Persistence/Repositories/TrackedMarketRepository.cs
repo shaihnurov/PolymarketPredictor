@@ -34,5 +34,10 @@ public class TrackedMarketRepository(AppDbContext dbContext) : ITrackedMarketRep
         dbContext.TrackedMarkets.AsNoTracking().Where(m => m.Status == MarketStatus.Open).Select(m => m.Id).ToListAsync(ct);
 
     /// <inheritdoc />
+    /// <remarks>Только для чтения при расчёте статистики — без трекинга</remarks>
+    public Task<List<TrackedMarket>> GetResolvedMarketsAsync(CancellationToken ct) =>
+        dbContext.TrackedMarkets.AsNoTracking().Where(m => m.Status == MarketStatus.Resolved).ToListAsync(ct);
+
+    /// <inheritdoc />
     public void Add(TrackedMarket market) => dbContext.TrackedMarkets.Add(market);
 }

@@ -1,9 +1,10 @@
 using PolymarketPredictor.Application.Extensions;
-using PolymarketPredictor.Persistence.Extensions;
 using PolymarketPredictor.Infrastructure.Extensions;
+using PolymarketPredictor.Persistence.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration); 
@@ -21,6 +22,7 @@ if (app.Environment.IsDevelopment())
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.MapGet("/api/health", () => Results.Ok(new { Status = "ok" }));
 

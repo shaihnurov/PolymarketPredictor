@@ -1,10 +1,444 @@
 ﻿<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8" />
-    <title>Polymarket Predictor</title>
-</head>
-<body>
-    <p>Фронтенд появится позже. Пока доступен API: <a href="/swagger">/swagger</a></p>
-</body>
+    <html lang="ru">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Polymarket Predictor</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+        <style>
+            :root {
+                --ink: #12151b;
+                --panel: #1a1f28;
+                --panel-border: #2a3140;
+                --paper: #e8e6df;
+                --muted: #8b93a3;
+                --amber: #d9a441;
+                --amber-dim: #7a6535;
+                --green: #4caf7d;
+                --red: #d9634a;
+                --mono: 'JetBrains Mono', 'Consolas', 'SF Mono', monospace;
+                --sans: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: var(--ink);
+                color: var(--paper);
+                font-family: var(--sans);
+                min-height: 100vh;
+            }
+
+            header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 20px 28px;
+                border-bottom: 1px solid var(--panel-border);
+            }
+
+                header h1 {
+                    font-size: 18px;
+                    font-weight: 600;
+                    letter-spacing: 0.02em;
+                    margin: 0;
+                }
+
+                    header h1 span {
+                        color: var(--amber);
+                    }
+
+            .disclaimer {
+                font-size: 12px;
+                color: var(--muted);
+                max-width: 420px;
+                line-height: 1.4;
+            }
+
+            button {
+                background: var(--amber);
+                color: var(--ink);
+                border: none;
+                padding: 9px 16px;
+                border-radius: 4px;
+                font-family: var(--sans);
+                font-weight: 600;
+                font-size: 13px;
+                cursor: pointer;
+            }
+
+                button:hover {
+                    background: #e8b658;
+                }
+
+                button:disabled {
+                    background: var(--amber-dim);
+                    cursor: not-allowed;
+                }
+
+                button:focus-visible {
+                    outline: 2px solid var(--paper);
+                    outline-offset: 2px;
+                }
+
+            main {
+                display: grid;
+                grid-template-columns: 320px 1fr;
+                gap: 0;
+                min-height: calc(100vh - 73px);
+            }
+
+            #market-list {
+                border-right: 1px solid var(--panel-border);
+                overflow-y: auto;
+            }
+
+            .market-row {
+                display: block;
+                width: 100%;
+                text-align: left;
+                background: none;
+                border: none;
+                border-bottom: 1px solid var(--panel-border);
+                color: var(--paper);
+                padding: 14px 20px;
+                cursor: pointer;
+                font-family: var(--sans);
+            }
+
+                .market-row:hover, .market-row.active {
+                    background: var(--panel);
+                }
+
+                .market-row:focus-visible {
+                    outline: 2px solid var(--amber);
+                    outline-offset: -2px;
+                }
+
+                .market-row .question {
+                    font-size: 13px;
+                    line-height: 1.4;
+                    margin-bottom: 6px;
+                }
+
+                .market-row .meta {
+                    display: flex;
+                    justify-content: space-between;
+                    font-family: var(--mono);
+                    font-size: 12px;
+                    color: var(--muted);
+                }
+
+                .market-row .prob {
+                    color: var(--amber);
+                    font-weight: 600;
+                }
+
+            #detail {
+                padding: 32px 40px;
+                overflow-y: auto;
+            }
+
+            .empty-state {
+                color: var(--muted);
+                font-size: 14px;
+                margin-top: 60px;
+                text-align: center;
+            }
+
+            .detail-question {
+                font-size: 22px;
+                font-weight: 600;
+                max-width: 640px;
+                line-height: 1.35;
+                margin: 0 0 24px;
+            }
+
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1px;
+                background: var(--panel-border);
+                border: 1px solid var(--panel-border);
+                margin-bottom: 28px;
+            }
+
+            .stat-cell {
+                background: var(--panel);
+                padding: 16px 20px;
+            }
+
+                .stat-cell .label {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.06em;
+                    color: var(--muted);
+                    margin-bottom: 6px;
+                }
+
+                .stat-cell .value {
+                    font-family: var(--mono);
+                    font-size: 24px;
+                    font-weight: 600;
+                }
+
+                    .stat-cell .value.amber {
+                        color: var(--amber);
+                    }
+
+            .risk-notes {
+                list-style: none;
+                padding: 0;
+                margin: 0 0 28px;
+            }
+
+                .risk-notes li {
+                    font-size: 13px;
+                    padding: 10px 14px;
+                    border-left: 3px solid var(--red);
+                    background: rgba(217, 99, 74, 0.08);
+                    margin-bottom: 8px;
+                    line-height: 1.4;
+                }
+
+                .risk-notes .none {
+                    color: var(--muted);
+                    font-size: 13px;
+                    padding: 10px 14px;
+                }
+
+            .args-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-family: var(--mono);
+                font-size: 13px;
+                margin-bottom: 32px;
+            }
+
+                .args-table td {
+                    padding: 8px 12px;
+                    border-bottom: 1px solid var(--panel-border);
+                }
+
+                    .args-table td:first-child {
+                        color: var(--muted);
+                        width: 55%;
+                    }
+
+                    .args-table td:last-child {
+                        text-align: right;
+                    }
+
+            #history-chart-wrap {
+                max-width: 640px;
+                height: 220px;
+            }
+
+            section h2 {
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+                margin: 0 0 12px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header>
+            <h1>Polymarket <span>Predictor</span></h1>
+            <p class="disclaimer">Учебная оценка вероятности по статистической модели. Не финансовый совет, не гарантия доходности.</p>
+            <button id="sync-btn">Синхронизировать</button>
+        </header>
+
+        <main>
+            <nav id="market-list"><p class="empty-state">Загрузка списка рынков…</p></nav>
+
+            <div id="detail">
+                <p class="empty-state">Выбери рынок слева, чтобы увидеть прогноз.</p>
+            </div>
+        </main>
+
+        <script>
+            const api = {
+              list: () => fetch('/api/markets').then(r => r.json()),
+              detail: (id) => fetch(`/api/markets/${id}`).then(r => r.json()),
+              history: (id) => fetch(`/api/markets/${id}/history`).then(r => r.json()),
+              sync: () => fetch('/api/markets/sync', { method: 'POST' }).then(r => r.json()),
+            };
+
+            let activeMarketId = null;
+            let historyChart = null;
+
+            function formatProbability(value) {
+                if (value === null || value === undefined)
+                    return '—';
+                return (value * 100).toFixed(1) + '%';
+            }
+
+            function renderMarketList(markets) {
+                const nav = document.getElementById('market-list');
+                nav.innerHTML = '';
+
+                if (markets.length === 0)
+                {
+                    nav.innerHTML = '<p class="empty-state">Рынков пока нет — нажми «Синхронизировать» после наполнения БД.</p>';
+                    return;
+                }
+
+                markets.forEach(m => {
+                    const btn = document.createElement('button');
+                    btn.className = 'market-row' + (m.id === activeMarketId ? ' active' : '');
+                    btn.innerHTML = `
+                        <div class="question">${m.question}</div>
+                        <div class="meta">
+                        <span>${m.assetSymbol} · ${m.resolutionDate}</span>
+                        <span class="prob">${formatProbability(m.latestPredictedProbability)}</span>
+                        </div>`;
+                    btn.addEventListener('click', () => selectMarket(m.id));
+                    nav.appendChild(btn);
+                });
+            }
+
+            async function selectMarket(id) {
+                activeMarketId = id;
+                document.querySelectorAll('.market-row').forEach((el, i) => {});
+                const [detail, history] = await Promise.all([api.detail(id), api.history(id)]);
+                renderDetail(detail, history);
+
+                const markets = await api.list();
+                renderMarketList(markets);
+            }
+
+            function renderDetail(market, history) {
+                const el = document.getElementById('detail');
+
+                if (!market.latestPrediction) {
+                    el.innerHTML = `
+                        <h1 class="detail-question">${market.question}</h1>
+                        <p class="empty-state">Прогноза по этому рынку ещё нет — запусти синхронизацию.</p>`;
+                    return;
+                }
+
+                const p = market.latestPrediction;
+                const a = p.arguments;
+
+                const riskHtml = p.riskNotes.length > 0 ? '<ul class="risk-notes">' + p.riskNotes.map(n => `<li>${n}</li>`).join('') + '</ul>'
+                    : '<p class="risk-notes"><span class="none">Явных факторов риска не выявлено по текущим правилам.</span></p>';
+
+                el.innerHTML = `
+                    <h1 class="detail-question">${market.question}</h1>
+
+                    <div class="stat-grid">
+                        <div class="stat-cell">
+                        <div class="label">Вероятность</div>
+                        <div class="value amber">${formatProbability(p.predictedProbability)}</div>
+                        </div>
+                        <div class="stat-cell">
+                        <div class="label">Уверенность</div>
+                        <div class="value">${formatProbability(p.confidenceScore)}</div>
+                        </div>
+                        <div class="stat-cell">
+                        <div class="label">Рынок Polymarket</div>
+                        <div class="value">${formatProbability(a.marketImpliedProbability)}</div>
+                        </div>
+                    </div>
+
+                    <section>
+                        <h2>Риски</h2>
+                        ${riskHtml}
+                    </section>
+
+                    <section>
+                        <h2>Аргументы прогноза</h2>
+                        <table class="args-table">
+                        <tr><td>Текущая цена</td><td>$${a.currentPrice.toLocaleString()}</td></tr>
+                        <tr><td>Порог</td><td>$${a.thresholdValue.toLocaleString()} (${a.direction === 'Above' ? 'выше' : 'ниже'})</td></tr>
+                        <tr><td>Дней до резолюции</td><td>${a.daysToResolution}</td></tr>
+                        <tr><td>Дневная волатильность</td><td>${(a.dailyVolatility * 100).toFixed(2)}%</td></tr>
+                        <tr><td>Расстояние в сигмах</td><td>${a.distanceInSigmas.toFixed(2)}</td></tr>
+                        <tr><td>Объём Polymarket (24ч)</td><td>$${a.volume24h.toLocaleString()}</td></tr>
+                        <tr><td>Ликвидность Polymarket</td><td>$${a.liquidity.toLocaleString()}</td></tr>
+                        <tr><td>Дней истории цен использовано</td><td>${a.daysOfPriceHistoryUsed}</td></tr>
+                        </table>
+                    </section>
+
+                    <section>
+                        <h2>История прогноза</h2>
+                        <div id="history-chart-wrap"><canvas id="history-chart"></canvas></div>
+                    </section>
+                `;
+
+                renderHistoryChart(history);
+            }
+
+            function renderHistoryChart(history) {
+                if (historyChart)
+                {
+                    historyChart.destroy();
+                }
+
+                const ctx = document.getElementById('history-chart');
+                historyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: history.map(h => new Date(h.createdAt).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })),
+                        datasets: [{
+                        label: 'Вероятность',
+                        data: history.map(h => h.predictedProbability * 100),
+                        borderColor: '#d9a441',
+                        backgroundColor: 'rgba(217, 164, 65, 0.12)',
+                        tension: 0.25,
+                        fill: true,
+                        pointRadius: 3,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                        y: { min: 0, max: 100, ticks: { color: '#8b93a3', callback: v => v + '%' }, grid: { color: '#2a3140' } },
+                        x: { ticks: { color: '#8b93a3' }, grid: { display: false } }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            async function handleSyncClick() {
+                const btn = document.getElementById('sync-btn');
+                btn.disabled = true;
+                btn.textContent = 'Синхронизация…';
+
+                try
+                {
+                    const result = await api.sync();
+                    btn.textContent = `Готово: ${result.marketsProcessed} ок, ${result.marketsFailed} ошибок`;
+
+                    const markets = await api.list();
+                    renderMarketList(markets);
+                    if (activeMarketId)
+                    {
+                        await selectMarket(activeMarketId);
+                    }
+                }
+                catch
+                {
+                    btn.textContent = 'Ошибка синхронизации';
+                }
+                finally
+                {
+                    setTimeout(() => { btn.disabled = false; btn.textContent = 'Синхронизировать'; }, 2500);
+                }
+            }
+
+            document.getElementById('sync-btn').addEventListener('click', handleSyncClick);
+
+            api.list().then(renderMarketList);
+        </script>
+    </body>
 </html>

@@ -1,4 +1,5 @@
 ﻿using PolymarketPredictor.Domain.Entities;
+using PolymarketPredictor.Domain.Enums;
 
 namespace PolymarketPredictor.Application.Common.Interfaces;
 
@@ -29,6 +30,12 @@ public interface ITrackedMarketRepository
     /// </summary>
     /// <param name="ct">Токен отмены</param>
     Task<List<TrackedMarket>> GetAllAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Получить идентификаторы всех открытых (ещё не резолвленных) рынков — для планировщика синка
+    /// </summary>
+    /// <param name="ct">Токен отмены</param>
+    Task<List<Guid>> GetOpenMarketIdsAsync(CancellationToken ct);
 
     /// <summary>
     /// Добавить новый отслеживаемый рынок

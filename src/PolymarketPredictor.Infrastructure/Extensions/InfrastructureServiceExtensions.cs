@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PolymarketPredictor.Application.Common.Interfaces;
+using PolymarketPredictor.Infrastructure.BackgroundJobs;
 using PolymarketPredictor.Infrastructure.ExternalClients.CoinGecko;
 using PolymarketPredictor.Infrastructure.ExternalClients.Polymarket;
 
@@ -15,7 +17,7 @@ public static class InfrastructureServiceExtensions
     /// </summary>
     /// <param name="services">Коллекция сервисов DI</param>
     /// <returns>Та же коллекция сервисов, для цепочки вызовов</returns>
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpClient<IPolymarketClient, PolymarketClient>(client =>
         {
@@ -28,6 +30,9 @@ public static class InfrastructureServiceExtensions
             client.BaseAddress = new Uri("https://api.coingecko.com/api/v3/");
             client.Timeout = TimeSpan.FromSeconds(15);
         }).AddStandardResilienceHandler();
+
+        services.Configure<MarketSyncOptions>(configuration.GetSection(MarketSyncOptions.SectionName));
+        services.AddHostedService<MarketSyncBackgroundService>();
 
         return services;
     }

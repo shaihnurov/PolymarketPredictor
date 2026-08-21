@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PolymarketPredictor.Application.Common.Interfaces;
 using PolymarketPredictor.Domain.Entities;
+using PolymarketPredictor.Domain.Enums;
 
 namespace PolymarketPredictor.Persistence.Repositories;
 
@@ -26,6 +27,11 @@ public class TrackedMarketRepository(AppDbContext dbContext) : ITrackedMarketRep
     /// <inheritdoc />
     public Task<List<TrackedMarket>> GetAllAsync(CancellationToken ct) =>
         dbContext.TrackedMarkets.AsNoTracking().OrderByDescending(m => m.CreatedAt).ToListAsync(ct);
+
+    /// <inheritdoc />
+    /// <remarks>Только список Id для планировщика — без трекинга и без лишних данных</remarks>
+    public Task<List<Guid>> GetOpenMarketIdsAsync(CancellationToken ct) =>
+        dbContext.TrackedMarkets.AsNoTracking().Where(m => m.Status == MarketStatus.Open).Select(m => m.Id).ToListAsync(ct);
 
     /// <inheritdoc />
     public void Add(TrackedMarket market) => dbContext.TrackedMarkets.Add(market);

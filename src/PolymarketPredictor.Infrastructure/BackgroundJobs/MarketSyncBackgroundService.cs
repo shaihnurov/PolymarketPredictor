@@ -21,6 +21,12 @@ public sealed class MarketSyncBackgroundService(IServiceScopeFactory scopeFactor
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (!options.Value.Enabled)
+        {
+            logger.LogInformation("MarketSyncBackgroundService отключён конфигурацией (MarketSync:Enabled=false)");
+            return;
+        }
+
         var interval = TimeSpan.FromMinutes(options.Value.IntervalMinutes);
         using var timer = new PeriodicTimer(interval);
 

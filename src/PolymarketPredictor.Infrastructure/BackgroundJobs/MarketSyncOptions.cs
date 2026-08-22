@@ -14,4 +14,10 @@ public sealed class MarketSyncOptions
     /// Интервал между циклами синка, в минутах. По плану 15–30 минут
     /// </summary>
     public int IntervalMinutes { get; set; } = 20;
+
+    /// <summary>
+    /// Включена ли фоновая синхронизация вообще. По умолчанию true (прод); в интеграционных
+    /// тестах выключается через конфигурацию, чтобы тест не дёргал реальные внешние API
+    /// </summary>
+    public bool Enabled { get; set; } = true;
 }

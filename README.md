@@ -54,6 +54,23 @@ dotnet run --project src/PolymarketPredictor.WebApi
 
 Открыть `https://localhost:<port>/` — фронтенд со списком рынков. Swagger — `https://localhost:<port>/swagger`.
 
+## Скриншоты
+
+### Список рынков без синхронизации
+![Список рынков без синхронизации](docs/screenshots/market-list-no-sync.png)
+
+### Список синхронизированных рынков и карточкой прогноза
+![Список синхронизированных рынков и карточкой прогноза](docs/screenshots/prediction-detail-and-sync.png)
+
+### Swagger
+![Swagger](docs/screenshots/swagger.png)
+
+### Swagger — GET /api/markets/{id}
+![Swagger](docs/screenshots/swagger-get-markets.png)
+
+### Swagger — POST /api/markets/sync
+![Swagger](docs/screenshots/swagger-post-sync.png)
+
 ### Первое наполнение данными
 
 1. `POST /api/markets/seed` — добавит 5 реальных рынков (BTC, ETH×1, SOL×1, XRP×2) из ручного seed-списка (`Application/Markets/Seed/MarketSeedList.cs`).
